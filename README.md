@@ -4,28 +4,28 @@ This document describes the BGP Large Communities (RFC 8092) available for VIRTU
 
 ## Network Locations
 
-| Code | Location       | POP Code |
-|------|----------------|----------|
-| 0    | Paris, France  | PAR01FR  |
-| 1    | Lille, France  | LIL01FR  |
-| 10   | Frankfurt, Germany | FRA01DE  |
-| 20   | Amsterdam, Netherlands | AMS01NL  |
-| 999  | All Locations  | ALL      |
+| Code | City | Country | POP Code |
+|------|------|---------|----------|
+| 000  | Paris | France | PAR01FR  |
+| 001  | Lille | France | LIL01FR  |
+| 010  | Frankfurt | Germany | FRA01DE  |
+| 020  | Amsterdam | Netherlands | AMS01NL  |
+| 999  | All Locations | - | ALL      |
 
 ## BGP Large Communities Format
 
-All communities follow the format: `35661:action:parameter`
+All communities follow the format: `35661:action+location:parameter`
 
 ### Traffic Engineering Communities
 
 | Community | Description |
 |-----------|-------------|
-| `35661:0[POP]:[ASN]` | Route learned from ASN at location [POP] |
-| `35661:1[POP]:[ASN]` | Prepend 1x to ASN at location [POP] |
-| `35661:2[POP]:[ASN]` | Prepend 2x to ASN at location [POP] |
-| `35661:3[POP]:[ASN]` | Prepend 3x to ASN at location [POP] |
-| `35661:9[POP]:[ASN]` | Do not export to ASN at location [POP] |
-| `35661:9[POP]:0` | Do not export routes to location [POP] |
+| `35661:0[LOC]:[ASN]` | Route learned from ASN at location code [LOC] |
+| `35661:1[LOC]:[ASN]` | Prepend 1x to ASN at location code [LOC] |
+| `35661:2[LOC]:[ASN]` | Prepend 2x to ASN at location code [LOC] |
+| `35661:3[LOC]:[ASN]` | Prepend 3x to ASN at location code [LOC] |
+| `35661:9[LOC]:[ASN]` | Do not export to ASN at location code [LOC] |
+| `35661:9[LOC]:0` | Do not export routes to location code [LOC] |
 
 ### Internet Exchange Communities
 
@@ -43,26 +43,26 @@ All communities follow the format: `35661:action:parameter`
 
 ### Direct Peers
 
-| ASN    | Name                      | PAR01FR | LIL01FR | FRA01DE | AMS01NL |
-|--------|---------------------------|:-------:|:-------:|:-------:|:-------:|
-| AS174  | COGENT                    |         | ✓       |         |         |
-| AS1299 | ARELION                   | ✓       |         | ✓       | ✓       |
-| AS3257 | GTT                       |         |         | ✓       |         |
-| AS30823| AUROLOGIC                 |         |         | ✓       |         |
-| AS35133| Eranium                   |         |         |         | ✓       |
-| AS44530| HOPUS                     | ✓       |         |         |         |
+| ASN    | Name                      | Paris | Lille | Frankfurt | Amsterdam |
+|--------|---------------------------|:-----:|:-----:|:---------:|:---------:|
+| AS174  | COGENT                    |       | ✓     |           |           |
+| AS1299 | ARELION                   | ✓     |       | ✓         | ✓         |
+| AS3257 | GTT                       |       |       | ✓         |           |
+| AS30823| AUROLOGIC                 |       |       | ✓         |           |
+| AS35133| Eranium                   |       |       |           | ✓         |
+| AS44530| HOPUS                     | ✓     |       |           |           |
 
 ### Internet Exchanges
 
-| Exchange              | ASN     | Location    |
-|-----------------------|---------|-------------|
-| FranceIX Paris        | AS51706 | PAR01FR     |
-| FranceIX Lille        | AS62228 | LIL01FR     |
-| LILLIX                | AS47214 | LIL01FR     |
-| DE-CIX Frankfurt      | AS6695  | FRA01DE     |
-| DE-CIX Dusseldorf     | AS56890 | FRA01DE     |
-| ERA-IX Frankfurt      | AS213687| FRA01DE     |
-| ERA-IX Amsterdam      | AS206221| AMS01NL     |
+| Exchange              | ASN     | City      | Country    |
+|-----------------------|---------|-----------|------------|
+| FranceIX Paris        | AS51706 | Paris     | France     |
+| FranceIX Lille        | AS62228 | Lille     | France     |
+| LILLIX                | AS47214 | Lille     | France     |
+| DE-CIX Frankfurt      | AS6695  | Frankfurt | Germany    |
+| DE-CIX Dusseldorf     | AS56890 | Frankfurt | Germany    |
+| ERA-IX Frankfurt      | AS213687| Frankfurt | Germany    |
+| ERA-IX Amsterdam      | AS206221| Amsterdam | Netherlands|
 
 ## IX Peers
 
