@@ -4,13 +4,15 @@ This document describes the BGP Large Communities (RFC 8092) available for VIRTU
 
 ## Network Locations
 
-| Code | City | Country | POP Code |
-|------|------|---------|----------|
-| 000  | Paris | France | PAR01FR  |
-| 001  | Lille | France | LIL01FR  |
-| 010  | Frankfurt | Germany | FRA01DE  |
-| 020  | Amsterdam | Netherlands | AMS01NL  |
-| 999  | All Locations | - | ALL      |
+| Location Code | City       | Country    | POP Code |
+|---------------|------------|------------|----------|
+| 000           | Paris      | France     | PAR01FR  |
+| 001           | Lille      | France     | LIL01FR  |
+| 010           | Frankfurt  | Germany    | FRA01DE  |
+| 020           | Amsterdam  | Netherlands| AMS01NL  |
+| 999           | All Locations | -       | ALL      |
+
+**Note**: In BGP communities, use the 3-digit `Location Code` (e.g., `000` for Paris) rather than the POP Code (e.g., `PAR01FR`). The POP Code is for internal reference only.
 
 ## BGP Large Communities Format
 
@@ -18,30 +20,32 @@ All communities follow the format: `35661:action+location:parameter`
 
 ### Traffic Engineering Communities
 
-| Community | Description |
-|-----------|-------------|
+| Community          | Description                                   |
+|--------------------|-----------------------------------------------|
 | `35661:0[LOC]:[ASN]` | Route learned from ASN at location code [LOC] |
-| `35661:1[LOC]:[ASN]` | Prepend 1x to ASN at location code [LOC] |
-| `35661:2[LOC]:[ASN]` | Prepend 2x to ASN at location code [LOC] |
-| `35661:3[LOC]:[ASN]` | Prepend 3x to ASN at location code [LOC] |
-| `35661:9[LOC]:[ASN]` | Do not export to ASN at location code [LOC] |
-| `35661:9[LOC]:0` | Do not export routes to location code [LOC] |
+| `35661:1[LOC]:[ASN]` | Prepend 1x to ASN at location code [LOC]      |
+| `35661:2[LOC]:[ASN]` | Prepend 2x to ASN at location code [LOC]      |
+| `35661:3[LOC]:[ASN]` | Prepend 3x to ASN at location code [LOC]      |
+| `35661:8[LOC]:[ASN]` | Export only to ASN at location code [LOC]     |
+| `35661:9[LOC]:[ASN]` | Do not export to ASN at location code [LOC]   |
+| `35661:9[LOC]:0`     | Do not export routes to location code [LOC]   |
+| `35661:9999:0`       | Do not export routes anywhere                 |
 
 ### Internet Exchange Communities
 
-| Community | Description |
-|-----------|-------------|
-| `35661:8001:0` | Do not export to all FranceIX Paris peers |
-| `35661:8002:0` | Do not export to all FranceIX Lille peers |
-| `35661:8003:0` | Do not export to all LILLIX peers |
-| `35661:8004:0` | Do not export to all DE-CIX Frankfurt peers |
-| `35661:8005:0` | Do not export to all DE-CIX Dusseldorf peers |
-| `35661:8006:0` | Do not export to all ERA-IX Frankfurt peers |
-| `35661:8007:0` | Do not export to all ERA-IX Amsterdam peers |
+| Community      | Description                              |
+|----------------|------------------------------------------|
+| `35661:7001:0` | Do not export to all FranceIX Paris peers |
+| `35661:7002:0` | Do not export to all FranceIX Lille peers |
+| `35661:7003:0` | Do not export to all LILLIX peers         |
+| `35661:7004:0` | Do not export to all DE-CIX Frankfurt peers |
+| `35661:7005:0` | Do not export to all DE-CIX Dusseldorf peers |
+| `35661:7006:0` | Do not export to all ERA-IX Frankfurt peers |
+| `35661:7007:0` | Do not export to all ERA-IX Amsterdam peers |
 
 ## Network Peers
 
-### Direct Peers
+### Transit Providers
 
 | ASN    | Name                      | Paris | Lille | Frankfurt | Amsterdam |
 |--------|---------------------------|:-----:|:-----:|:---------:|:---------:|
@@ -87,17 +91,30 @@ All communities follow the format: `35661:action+location:parameter`
 ## Examples
 
 ```
-# Do not export to CLOUDFLARE (AS13335) at Paris
+# Do not export to CLOUDFLARE (AS13335) at Paris (location code 000)
 35661:9000:13335
 
-# Prepend 2x to ARELION (AS1299) in Frankfurt
+# Prepend 2x to ARELION (AS1299) in Frankfurt (location code 010)
 35661:2010:1299
 
-# Do not export routes to any peer at DE-CIX Frankfurt (except Route Server)
-35661:8004:0
+# Do not export routes to any peer at DE-CIX Frankfurt
+35661:7004:0
 
 # Prepend 3x to all peers at all locations
 35661:3999:0
 
-# Do not export routes to Amsterdam location
+# Do not export routes to Amsterdam (location code 020)
 35661:9020:0
+
+# Export routes only to ARELION (AS1299) in Paris (location code 000)
+35661:9999:0         # Step 1: Do not export anywhere
+35661:8000:1299      # Step 2: Allow export only to ARELION in Paris
+
+# Export routes only to GOOGLE (AS15169) in Frankfurt (location code 010)
+35661:9999:0         # Step 1: Do not export anywhere
+35661:8010:15169     # Step 2: Allow export only to GOOGLE in Frankfurt
+
+# Block export to Lille (location code 001) but allow to COGENT (AS174) there
+35661:9001:0         # Step 1: Do not export to Lille
+35661:8001:174       # Step 2: Allow export only to COGENT in Lille
+```
