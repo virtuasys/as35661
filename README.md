@@ -50,7 +50,7 @@ All communities follow the format: `35661:action+location:parameter`
 | ASN    | Name                      | Paris | Lille | Frankfurt | Amsterdam |
 |--------|---------------------------|:-----:|:-----:|:---------:|:---------:|
 | AS174  | COGENT                    |       | ✓     |           |           |
-| AS1299 | ARELION                   | ✓     |       | ✓         | ✓         |
+| AS1299 | ARELION                   | ✓     |       | ✓         | ⌛         |
 | AS3257 | GTT                       |       |       | ✓         |           |
 | AS30823| AUROLOGIC                 |       |       | ✓         |           |
 | AS35133| Eranium                   |       |       |           | ✓         |
@@ -70,23 +70,25 @@ All communities follow the format: `35661:action+location:parameter`
 
 ## IX Peers
 
-| ASN     | Peer Name       | FranceIX Paris | LILLIX | DE-CIX Frankfurt | DE-CIX Dusseldorf | ERA-IX Frankfurt | ERA-IX Amsterdam |
-|---------|-----------------|:--------------:|:------:|:----------------:|:-----------------:|:----------------:|:----------------:|
-| AS714   | Apple           | ✓              |        | ✓                |                   |                  | ✓                |
-| AS8075  | Microsoft       | ✓              |        | ✓                |                   |                  | ✓                |
-| AS8966  | ETISALAT        | ✓              |        | ✓                |                   |                  |                  |
-| AS9009  | M247            |                |        | ✓                |                   |                  |                  |
-| AS13335 | CLOUDFLARE      | ✓              |        | ✓                | ✓                 | ✓                | ✓                |
-| AS15169 | GOOGLE          | ✓              |        | ✓                |                   | ✓                | ✓                |
-| AS16276 | OVH             | ✓              | ✓      | ✓                |                   |                  | ✓                |
-| AS20940 | AKAMAI          | ✓              |        | ✓                |                   |                  |                  |
-| AS25369 | ZARE            | ✓              |        |                  |                   |                  |                  |
-| AS32934 | META            | ✓              |        | ✓                | ✓                 |                  | ✓                |
-| AS34019 | HIVANE          | ✓              | ✓      | ✓                |                   |                  |                  |
-| AS45102 | ALIBABA         |                |        | ✓                |                   |                  |                  |
-| AS62044 | ZSCALER         | ✓              |        | ✓                |                   |                  |                  |
-| AS197922| TECHCREA        |                | ✓      |                  |                   |                  |                  |
-| AS206002| SCALAIR         |                | ✓      |                  |                   |                  |                  |
+| ASN      | Peer Name   | FranceIX Paris | LILLIX | DE-CIX Frankfurt | DE-CIX Dusseldorf | ERA-IX Frankfurt | ERA-IX Amsterdam |
+|----------|-------------|:--------------:|:------:|:----------------:|:-----------------:|:----------------:|:----------------:|
+| AS714    | Apple       |       ✓        |        |        ⌛         |                   |                  |        ✓         |
+| AS8075   | Microsoft   |       ✓        |        |        ⌛         |                   |                  |        ✓         |
+| AS8966   | ETISALAT    |       ✓        |        |        ✓         |                   |                  |                  |
+| AS9009   | M247        |                |        |        ✓         |                   |                  |                  |
+| AS13335  | CLOUDFLARE  |       ✓        |        |        ✓         |         ✓         |        ✓         |        ✓         |
+| AS15169  | GOOGLE      |       ✓        |        |        ✓         |                   |        ✓         |        ✓         |
+| AS16276  | OVH         |       ✓        |   ✓    |        ✓         |                   |                  |                  |
+| AS16509  | AMAZON      |       ⌛        |        |        ⌛         |                   |                  |                  |
+| AS20940  | AKAMAI      |       ✓        |        |        ✓         |                   |                  |                  |
+| AS24429  | ALIBABA CDN |                |        |        ✓         |                   |                  |                  |
+| AS25369  | ZARE        |       ✓        |        |                  |                   |                  |                  |
+| AS32934  | META        |       ✓        |        |        ✓         |         ✓         |                  |        ✓         |
+| AS34019  | HIVANE      |       ✓        |   ✓    |                  |                   |                  |                  |
+| AS45102  | ALIBABA     |                |        |        ✓         |                   |                  |                  |
+| AS62044  | ZSCALER     |       ✓        |        |        ✓         |                   |                  |                  |
+| AS197922 | TECHCREA    |                |   ✓    |                  |                   |                  |                  |
+| AS206002 | SCALAIR     |                |   ✓    |                  |                   |                  |                  |
 
 ## Examples
 
