@@ -72,14 +72,13 @@ All communities follow the format: `35661:action+location:parameter`
 
 | ASN      | Peer Name   | FranceIX Paris | LILLIX | DE-CIX Frankfurt | DE-CIX Dusseldorf | ERA-IX Frankfurt | ERA-IX Amsterdam |
 |----------|-------------|:--------------:|:------:|:----------------:|:-----------------:|:----------------:|:----------------:|
-| AS714    | Apple       |       ✓        |        |        ⌛         |                   |                  |        ✓         |
-| AS8075   | Microsoft   |       ✓        |        |        ⌛         |                   |                  |        ✓         |
+| AS714    | Apple       |       ✓        |        |        ⌛         |                   |                  |                  |
+| AS8075   | Microsoft   |       ✓        |        |        ⌛         |                   |                  |                  |
 | AS8966   | ETISALAT    |       ✓        |        |        ✓         |                   |                  |                  |
-| AS9009   | M247        |                |        |        ✓         |                   |                  |                  |
+| AS9009   | M247        |                |        |        ✓         |                   |                  |        ✓         |
 | AS13335  | CLOUDFLARE  |       ✓        |        |        ✓         |         ✓         |        ✓         |        ✓         |
 | AS15169  | GOOGLE      |       ✓        |        |        ✓         |                   |        ✓         |        ✓         |
 | AS16276  | OVH         |       ✓        |   ✓    |        ✓         |                   |                  |                  |
-| AS16509  | AMAZON      |       ⌛        |        |        ⌛         |                   |                  |                  |
 | AS20940  | AKAMAI      |       ✓        |        |        ✓         |                   |                  |                  |
 | AS24429  | ALIBABA CDN |                |        |        ✓         |                   |                  |                  |
 | AS25369  | ZARE        |       ✓        |        |                  |                   |                  |                  |
