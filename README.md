@@ -2,17 +2,18 @@
 
 This document describes the BGP Large Communities (RFC 8092) available for VIRTUASYS (AS35661) customers to control route announcements across our network.
 
+**Note:** This is a work in progress. Our goal is to replace all legacy BGP communities in the `35661:` namespace with BGP Large Communities. 
+During the transition period, both legacy and Large Community formats may coexist.
+
 ## Network Locations
 
-| Location Code | City       | Country    | POP Code |
-|---------------|------------|------------|----------|
-| 000           | Paris      | France     | PAR01FR  |
-| 001           | Lille      | France     | LIL01FR  |
-| 010           | Frankfurt  | Germany    | FRA01DE  |
-| 020           | Amsterdam  | Netherlands| AMS01NL  |
-| 999           | All Locations | -       | ALL      |
-
-**Note**: In BGP communities, use the 3-digit `Location Code` (e.g., `000` for Paris) rather than the POP Code (e.g., `PAR01FR`). The POP Code is for internal reference only.
+| Location Code | City          | Country     | POP Code |
+|---------------|---------------|-------------|----------|
+| 000           | Paris         | France      | PAR01FR  |
+| 001           | Lille         | France      | LIL01FR  |
+| 010           | Frankfurt     | Germany     | FRA01DE  |
+| 020           | Amsterdam     | Netherlands | AMS01NL  |
+| 999           | All Locations | -           | ALL      |
 
 ## BGP Large Communities Format
 
@@ -20,8 +21,8 @@ All communities follow the format: `35661:action+location:parameter`
 
 ### Traffic Engineering Communities
 
-| Community          | Description                                   |
-|--------------------|-----------------------------------------------|
+| Community            | Description                                   |
+|----------------------|-----------------------------------------------|
 | `35661:0[LOC]:[ASN]` | Route learned from ASN at location code [LOC] |
 | `35661:1[LOC]:[ASN]` | Prepend 1x to ASN at location code [LOC]      |
 | `35661:2[LOC]:[ASN]` | Prepend 2x to ASN at location code [LOC]      |
@@ -33,46 +34,53 @@ All communities follow the format: `35661:action+location:parameter`
 
 ### Internet Exchange Communities
 
-| Community      | Description                              |
-|----------------|------------------------------------------|
-| `35661:7001:0` | Do not export to all FranceIX Paris peers |
-| `35661:7002:0` | Do not export to all FranceIX Lille peers |
-| `35661:7003:0` | Do not export to all LILLIX peers         |
-| `35661:7004:0` | Do not export to all DE-CIX Frankfurt peers |
-| `35661:7005:0` | Do not export to all DE-CIX Dusseldorf peers |
-| `35661:7006:0` | Do not export to all ERA-IX Frankfurt peers |
-| `35661:7007:0` | Do not export to all ERA-IX Amsterdam peers |
+| IXP                  | Community Base | Route Source | Prepend 1x | Prepend 2x | Prepend 3x | No Announce |
+|----------------------|----------------|--------------|------------|------------|------------|-------------|
+| FranceIX Paris       | `35661:7001`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+| FranceIX Lille       | `35661:7002`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+| LILLIX               | `35661:7003`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+| DE-CIX Frankfurt     | `35661:7004`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+| DE-CIX Dusseldorf    | `35661:7005`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+| ERA-IX Frankfurt     | `35661:7006`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+| ERA-IX Amsterdam     | `35661:7007`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+
+**Notes:**
+- **Route Source (:0)**: Identifies routes from the specified IXP peer.
+- **Prepend (:1, :2, :3)**: Prepends the AS path 1x, 2x, or 3x to the specified IXP peers.
+- **No Announce (:9)**: Prevents route announcement to all peers at the specified IXP.
+
 
 ## Network Peers
 
 ### Transit Providers
 
-| ASN    | Name                      | Paris | Lille | Frankfurt | Amsterdam |
-|--------|---------------------------|:-----:|:-----:|:---------:|:---------:|
-| AS174  | COGENT                    |       | ✓     |           |           |
-| AS1299 | ARELION                   | ✓     |       | ✓         | ⌛         |
-| AS3257 | GTT                       |       |       | ✓         |           |
-| AS30823| AUROLOGIC                 |       |       | ✓         |           |
-| AS35133| Eranium                   |       |       |           | ✓         |
-| AS44530| HOPUS                     | ✓     |       |           |           |
+| ASN     | Name      | Paris | Lille | Frankfurt | Amsterdam |
+|---------|-----------|:-----:|:-----:|:---------:|:---------:|
+| AS174   | COGENT    |       |   ✓   |           |           |
+| AS1299  | ARELION   |   ✓   |       |     ✓     |     ⌛     |
+| AS3257  | GTT       |       |       |     ✓     |           |
+| AS30823 | AUROLOGIC |       |       |     ✓     |           |
+| AS35133 | Eranium   |       |       |           |     ✓     |
+| AS44530 | HOPUS     |   ✓   |       |           |           |
 
 ### Internet Exchanges
 
-| Exchange              | ASN     | City      | Country    |
-|-----------------------|---------|-----------|------------|
-| FranceIX Paris        | AS51706 | Paris     | France     |
-| FranceIX Lille        | AS62228 | Lille     | France     |
-| LILLIX                | AS47214 | Lille     | France     |
-| DE-CIX Frankfurt      | AS6695  | Frankfurt | Germany    |
-| DE-CIX Dusseldorf     | AS56890 | Frankfurt | Germany    |
-| ERA-IX Frankfurt      | AS213687| Frankfurt | Germany    |
-| ERA-IX Amsterdam      | AS206221| Amsterdam | Netherlands|
+| Exchange          | ASN      | City      | Country     |
+|-------------------|----------|-----------|-------------|
+| FranceIX Paris    | AS51706  | Paris     | France      |
+| FranceIX Lille    | AS62228  | Lille     | France      |
+| LILLIX            | AS47214  | Lille     | France      |
+| DE-CIX Frankfurt  | AS6695   | Frankfurt | Germany     |
+| DE-CIX Dusseldorf | AS56890  | Frankfurt | Germany     |
+| ERA-IX Frankfurt  | AS213687 | Frankfurt | Germany     |
+| ERA-IX Amsterdam  | AS206221 | Amsterdam | Netherlands |
 
 ## IX Peers
 
 | ASN      | Peer Name   | FranceIX Paris | LILLIX | DE-CIX Frankfurt | DE-CIX Dusseldorf | ERA-IX Frankfurt | ERA-IX Amsterdam |
 |----------|-------------|:--------------:|:------:|:----------------:|:-----------------:|:----------------:|:----------------:|
 | AS714    | Apple       |       ✓        |        |        ⌛         |                   |                  |                  |
+| AS6939   | HE.NET      |       ✓        |        |        ✓         |         ✓         |        ✓         |        ✓         |
 | AS8075   | Microsoft   |       ✓        |        |        ⌛         |                   |                  |                  |
 | AS8966   | ETISALAT    |       ✓        |        |        ✓         |                   |                  |                  |
 | AS9009   | M247        |                |        |        ✓         |                   |                  |        ✓         |
