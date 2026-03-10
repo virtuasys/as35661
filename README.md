@@ -2,7 +2,7 @@
 
 This document describes the BGP Large Communities (RFC 8092) available for VIRTUASYS (AS35661) customers to control route announcements across our network.
 
-**Note:** This is a work in progress. Our goal is to replace all legacy BGP communities in the `35661:` namespace with BGP Large Communities. 
+**Note:** This is a work in progress. Our goal is to replace all legacy BGP communities in the `35661:` namespace with BGP Large Communities.
 During the transition period, both legacy and Large Community formats may coexist.
 
 ## Network Locations
@@ -17,38 +17,45 @@ During the transition period, both legacy and Large Community formats may coexis
 
 ## BGP Large Communities Format
 
-All communities follow the format: `35661:action+location:parameter`
+All communities follow the format: `35661:ACTION+LOCATION:TARGET`
 
-### Traffic Engineering Communities
+- **ACTION**: Single digit defining the operation (first digit of the second field)
+- **LOCATION**: 3-digit location code (see table above)
+- **TARGET**: Target ASN, or a reserved group selector
 
-| Community            | Description                                   |
-|----------------------|-----------------------------------------------|
-| `35661:0[LOC]:[ASN]` | Route learned from ASN at location code [LOC] |
-| `35661:1[LOC]:[ASN]` | Prepend 1x to ASN at location code [LOC]      |
-| `35661:2[LOC]:[ASN]` | Prepend 2x to ASN at location code [LOC]      |
-| `35661:3[LOC]:[ASN]` | Prepend 3x to ASN at location code [LOC]      |
-| `35661:8[LOC]:[ASN]` | Export only to ASN at location code [LOC]     |
-| `35661:9[LOC]:[ASN]` | Do not export to ASN at location code [LOC]   |
-| `35661:9[LOC]:0`     | Do not export routes to location code [LOC]   |
-| `35661:9999:0`       | Do not export routes anywhere                 |
+### Actions
 
-### Internet Exchange Communities
+| Action | Community            | Description                                      |
+|--------|----------------------|--------------------------------------------------|
+| `0`    | `35661:0[LOC]:[TGT]` | Route learned from TARGET at LOCATION             |
+| `1`    | `35661:1[LOC]:[TGT]` | Prepend 1x to TARGET at LOCATION                  |
+| `2`    | `35661:2[LOC]:[TGT]` | Prepend 2x to TARGET at LOCATION                  |
+| `3`    | `35661:3[LOC]:[TGT]` | Prepend 3x to TARGET at LOCATION                  |
+| `8`    | `35661:8[LOC]:[TGT]` | Export only to TARGET at LOCATION                 |
+| `9`    | `35661:9[LOC]:[TGT]` | Do not export to TARGET at LOCATION               |
 
-| IXP                  | Community Base | Route Source | Prepend 1x | Prepend 2x | Prepend 3x | No Announce |
-|----------------------|----------------|--------------|------------|------------|------------|-------------|
-| FranceIX Paris       | `35661:7001`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
-| FranceIX Lille       | `35661:7002`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
-| LILLIX               | `35661:7003`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
-| DE-CIX Frankfurt     | `35661:7004`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
-| DE-CIX Dusseldorf    | `35661:7005`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
-| ERA-IX Frankfurt     | `35661:7006`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
-| ERA-IX Amsterdam     | `35661:7007`   | `:0`         | `:1`       | `:2`       | `:3`       | `:9`        |
+Actions 4-7 are reserved for future use.
 
-**Notes:**
-- **Route Source (:0)**: Identifies routes from the specified IXP peer.
-- **Prepend (:1, :2, :3)**: Prepends the AS path 1x, 2x, or 3x to the specified IXP peers.
-- **No Announce (:9)**: Prevents route announcement to all peers at the specified IXP.
+### Target Group Selectors
 
+| Target | Meaning                          |
+|--------|----------------------------------|
+| `0`    | All peers at location            |
+| `1`    | All **transit** peers at location |
+| `2`    | All **IX** peers at location      |
+| ASN    | Specific peer (by ASN)           |
+
+**Note:** Group selectors use reserved ASN values (AS0 per RFC 7607, AS1, AS2) that are not real peering targets.
+
+### Precedence Rules
+
+When multiple communities apply to the same route, they are evaluated from highest to lowest priority:
+
+1. `35661:8[LOC]:ASN` -- Explicit allow (always wins)
+2. `35661:9[LOC]:ASN` -- Explicit deny per-ASN
+3. `35661:9[LOC]:1` / `35661:9[LOC]:2` -- Group deny (transit / IX)
+4. `35661:9[LOC]:0` -- Location deny (all peers)
+5. `35661:9999:0` -- Global deny
 
 ## Network Peers
 
@@ -56,7 +63,7 @@ All communities follow the format: `35661:action+location:parameter`
 
 | ASN     | Name      | Paris | Lille | Frankfurt | Amsterdam |
 |---------|-----------|:-----:|:-----:|:---------:|:---------:|
-| AS174   | COGENT    |       |   ✓   |           |           |
+| AS174   | COGENT    |   ⌛   |   ✓   |           |           |
 | AS1299  | ARELION   |   ✓   |       |     ✓     |     ⌛     |
 | AS3257  | GTT       |       |       |     ✓     |           |
 | AS30823 | AUROLOGIC |       |       |     ✓     |           |
@@ -70,32 +77,28 @@ All communities follow the format: `35661:action+location:parameter`
 | FranceIX Paris    | AS51706  | Paris     | France      |
 | FranceIX Lille    | AS62228  | Lille     | France      |
 | LILLIX            | AS47214  | Lille     | France      |
-| DE-CIX Frankfurt  | AS6695   | Frankfurt | Germany     |
-| DE-CIX Dusseldorf | AS56890  | Frankfurt | Germany     |
 | ERA-IX Frankfurt  | AS213687 | Frankfurt | Germany     |
 | ERA-IX Amsterdam  | AS206221 | Amsterdam | Netherlands |
 
 ## IX Peers
 
-| ASN      | Peer Name   | FranceIX Paris | LILLIX | DE-CIX Frankfurt | DE-CIX Dusseldorf | ERA-IX Frankfurt | ERA-IX Amsterdam |
-|----------|-------------|:--------------:|:------:|:----------------:|:-----------------:|:----------------:|:----------------:|
-| AS714    | Apple       |       ✓        |        |        ⌛         |                   |                  |                  |
-| AS6939   | HE.NET      |       ✓        |        |        ✓         |         ✓         |        ✓         |        ✓         |
-| AS8075   | Microsoft   |       ✓        |        |        ⌛         |                   |                  |                  |
-| AS8966   | ETISALAT    |       ✓        |        |        ✓         |                   |                  |                  |
-| AS9009   | M247        |                |        |        ✓         |                   |                  |        ✓         |
-| AS13335  | CLOUDFLARE  |       ✓        |        |        ✓         |         ✓         |        ✓         |        ✓         |
-| AS15169  | GOOGLE      |       ✓        |        |        ✓         |                   |        ✓         |        ✓         |
-| AS16276  | OVH         |       ✓        |   ✓    |        ✓         |                   |                  |                  |
-| AS20940  | AKAMAI      |       ✓        |        |        ✓         |                   |                  |                  |
-| AS24429  | ALIBABA CDN |                |        |        ✓         |                   |                  |                  |
-| AS25369  | ZARE        |       ✓        |        |                  |                   |                  |                  |
-| AS32934  | META        |       ✓        |        |        ✓         |         ✓         |                  |        ✓         |
-| AS34019  | HIVANE      |       ✓        |   ✓    |                  |                   |                  |                  |
-| AS45102  | ALIBABA     |                |        |        ✓         |                   |                  |                  |
-| AS62044  | ZSCALER     |       ✓        |        |        ✓         |                   |                  |                  |
-| AS197922 | TECHCREA    |                |   ✓    |                  |                   |                  |                  |
-| AS206002 | SCALAIR     |                |   ✓    |                  |                   |                  |                  |
+| ASN      | Peer Name   | FranceIX Paris | LILLIX | ERA-IX Frankfurt | ERA-IX Amsterdam |
+|----------|-------------|:--------------:|:------:|:----------------:|:----------------:|
+| AS714    | Apple       |       ✓        |        |                  |                  |
+| AS6939   | HE.NET      |       ✓        |        |        ✓         |        ✓         |
+| AS8075   | Microsoft   |       ✓        |        |                  |                  |
+| AS8966   | ETISALAT    |       ✓        |        |                  |                  |
+| AS9009   | M247        |                |        |                  |        ✓         |
+| AS13335  | CLOUDFLARE  |       ✓        |        |        ✓         |        ✓         |
+| AS15169  | GOOGLE      |       ✓        |        |        ✓         |        ✓         |
+| AS16276  | OVH         |       ✓        |   ✓    |                  |                  |
+| AS20940  | AKAMAI      |       ✓        |        |                  |                  |
+| AS25369  | ZARE        |       ✓        |        |                  |                  |
+| AS32934  | META        |       ✓        |        |                  |        ✓         |
+| AS34019  | HIVANE      |       ✓        |   ✓    |                  |                  |
+| AS62044  | ZSCALER     |       ✓        |        |                  |                  |
+| AS197922 | TECHCREA    |                |   ✓    |                  |                  |
+| AS206002 | SCALAIR     |                |   ✓    |                  |                  |
 
 ## Examples
 
@@ -105,9 +108,6 @@ All communities follow the format: `35661:action+location:parameter`
 
 # Prepend 2x to ARELION (AS1299) in Frankfurt (location code 010)
 35661:2010:1299
-
-# Do not export routes to any peer at DE-CIX Frankfurt
-35661:7004:0
 
 # Prepend 3x to all peers at all locations
 35661:3999:0
@@ -126,4 +126,11 @@ All communities follow the format: `35661:action+location:parameter`
 # Block export to Lille (location code 001) but allow to COGENT (AS174) there
 35661:9001:0         # Step 1: Do not export to Lille
 35661:8001:174       # Step 2: Allow export only to COGENT in Lille
+
+# Anycast: block all IX peers at Paris, keep transits, allow only CLOUDFLARE on IX
+35661:9000:2         # Step 1: Block all IX peers at Paris
+35661:8000:13335     # Step 2: Exception: allow CLOUDFLARE at Paris
+
+# Block all IX peers globally but keep transits everywhere
+35661:9999:2         # Block all IX peers at all locations
 ```
